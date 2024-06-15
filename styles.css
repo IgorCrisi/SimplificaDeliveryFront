@@ -1,0 +1,38 @@
+body {
+  background-color: #f5f5dc;
+  color: #3d2817;
+  margin-bottom: 25px;
+}
+.navbar {
+  background-color: #3d2817;
+  color: #f5f5dc;
+}
+.navbar-brand {
+  color: #f5f5dc !important;
+}
+.form-check-input:checked {
+  background-color: #3d2817;
+}
+.btn-enviar {
+  background-color: #3d2817;
+  border-color: #4e3520;
+  color: white;
+}
+.btn-enviar:hover{
+  background-color: #312012;
+  border-color: #3d2817;
+  transition: 0.3s;
+  color: white;
+}
+
+.txt-aberto {
+    color: green;
+}
+
+.txt-fechado {
+    color: red;
+}
+
+.ingredienteContainer {
+  margin-left: 50px;
+}

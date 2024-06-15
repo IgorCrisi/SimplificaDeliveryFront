@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurante Tempero Brasileiro</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+      <img src="logo.png" width="60" height="30" class="d-inline-block align-top" alt="">
+      Restaurante Tempero Brasileiro
+    </a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+
+  <span><strong>Horário de atendimento:</strong> Domingo a Sexta de 10:30 ~ 14:00 <strong id="statusHorario">Aberto</strong></span>
+  <br>
+
+  <div id="cardapio" style="display: block;">
+    <div id="produtos" style="display: block;">
+      <div id="marmitas"></div>
+      <br>
+    
+      <form id="orderForm">
+        <div  id="ingredientes"></div>
+        <br>
+    
+        <div  id="bebidas"></div>
+        <br>
+    
+        <h2 class="mt-4">Informações de Contato:</h2>
+        <div class="form-group">
+          <label for="nomeCompleto">Nome Completo:</label>
+          <input type="text" class="form-control" id="nomeCompleto">
+        </div>
+        <div class="form-group">
+          <label for="telefone">Telefone:</label>
+          <input type="tel" class="form-control" id="telefone" maxlength="15">
+        </div>
+        <div class="form-group">
+          <label for="endereco">Endereço:</label>
+          <input type="text" class="form-control" id="endereco">
+        </div>
+    
+        <button type="button" class="btn btn-enviar mt-3 mr-2" onclick="processaPagamento()">Selecionar forma de pagamento</button>  
+    </div>
+
+    <div id="pagamento" style="display: none;">
+      <h2 class="mt-4">Forma de Pagamento:</h2>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="formaPagamento" id="cartaoCredito" value="Cartão de Crédito">
+        <label class="form-check-label" for="cartaoCredito">
+          Cartão de Crédito
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="formaPagamento" id="cartaoDebito" value="Cartão de Débito">
+        <label class="form-check-label" for="cartaoDebito">
+          Cartão de Débito
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="formaPagamento" id="dinheiro" value="Dinheiro">
+        <label class="form-check-label" for="dinheiro">
+          Dinheiro
+        </label>
+      </div>
+      <div class="form-group" id="trocoGroup" style="display: none;">
+        <label for="troco">Precisa de troco? Para quanto:</label>
+        <input type="number" class="form-control" id="troco">
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="formaPagamento" id="pix" value="PIX">
+        <label class="form-check-label" for="pix">
+          PIX
+        </label>
+      </div><br>
+  
+      <h3 id="total">Total: </h3>
+  
+      <button type="button" class="btn btn-enviar mt-3 mr-2" onclick="voltarAoCardapio()">Voltar ao cardápio</button>  
+      <button type="button" class="btn btn-enviar mt-3 mr-2" onclick="enviaPedido()">Enviar pedido</button>  
+      <br><br>
+    </div>
+  </div>
+  </form>
+</div>
+
+<script>
+  function voltarAoCardapio(){
+    document.getElementById('produtos').style.display = "block";
+
+    document.getElementById('pagamento').style.display = "none";
+  }
+
+  function processaPagamento(){
+      var valorMarmita = document.querySelector('input[name="tamanhos"]:checked').id;
+
+      const checkboxesBebidas = document.querySelectorAll('input[name="bebida"]');
+
+      var valorBebidas = [];
+
+      checkboxesBebidas.forEach(checkbox => {
+        if (checkbox.checked) {
+          valorBebidas.push(checkbox.id);
+        }
+      });
+
+      var total = 0;
+
+      total = valorMarmita;
+
+      for (let index = 0; index < valorBebidas.length; index++) {
+        total = Number.parseFloat(total) + Number.parseFloat(valorBebidas[index]);
+      }
+
+      document.getElementById('total').innerText = "Total: R$" + total;
+
+      document.getElementById('produtos').style.display = "none";
+
+      document.getElementById('pagamento').style.display = "block";
+  }
+
+  function getWeekday() {
+    const weekdays = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    const today = new Date();
+    const weekday = today.getDay();
+    return weekdays[weekday];
+  }
+
+  function verificarHorario() {
+    const agora = new Date();
+    const hora = agora.getHours();
+    const minutos = agora.getMinutes();
+    const horarioAtual = hora + minutos / 60; // Convertendo os minutos para horas
+
+    // Horários de abertura e fechamento
+    const horarioAbertura = 10.5; // 10:30
+    const horarioFechamento = 23; // 14:00
+
+    // Comparando o horário atual com os horários de abertura e fechamento
+    if (horarioAtual >= horarioAbertura && horarioAtual <= horarioFechamento) {
+      // Horário atual está dentro do horário de funcionamento
+      document.getElementById('statusHorario').innerText = 'Aberto';
+      document.getElementById('statusHorario').style.color = 'green';
+      document.getElementById('cardapio').style.display = 'block';
+    } else {
+      // Horário atual está fora do horário de funcionamento
+      document.getElementById('statusHorario').innerText = 'Fechado';
+      document.getElementById('statusHorario').style.color = 'red';
+      document.getElementById('cardapio').style.display = 'none';
+    }
+  }
+
+  window.onload = async function() {
+    const diaDaSemana = getWeekday();
+    console.log("Dia da semana: ", diaDaSemana);
+    verificarHorario();
+
+    var response = await fetch('http://10.3.152.81:3333/tamanhos/');
+    var marmitas = await response.json();
+
+    var conteudo = document.getElementById('marmitas');
+    conteudo.innerHTML = '<h2 class="mt-4">Escolha o tamanho da marmita:</h2>';
+    marmitas.forEach(marmita => {
+      conteudo.innerHTML += `
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="tamanhos" id="${marmita.valor}" value="${marmita.nome}">
+          <label class="form-check-label" for="${marmita.nome}">
+            ${marmita.nome}  <strong>R$${marmita.valor}</strong>
+          </label>
+      </div>`;
+    });
+
+    response = await fetch(`http://10.3.152.81:3333/cardapios/listByDia/${diaDaSemana}`);
+    cardapio = await response.json();
+
+    conteudo = document.getElementById('ingredientes');
+    conteudo.innerHTML = '<h2 class="mt-4">Escolha suas comidas favoritas:</h2>';
+
+    cardapio.forEach(cardapio => {
+      conteudo.innerHTML += '<div class="form-check">';
+      cardapio.ingredientes.forEach(ing => {
+        conteudo.innerHTML += `
+          <input type="checkbox" id="${ing.replace('{"nome":"', '').replace('"}', "")}" name="comida" value="${ing.replace('{"nome":"', '').replace('"}', "")}">
+          <label class="form-check-label" for="${ing}">
+            ${ing.replace('{"nome":"', '').replace('"}', "")}
+          </label><br>`;
+      });
+      conteudo.innerHTML += '</div>';
+    });
+
+    conteudo = document.getElementById('bebidas');
+    conteudo.innerHTML = '<h2 class="mt-4">Escolha suas bebidas favoritas:</h2>';
+    cardapio.forEach(cardapio => {
+      conteudo.innerHTML += '<div class="form-check">';
+        cardapio.bebidas.forEach(bebida => {
+        conteudo.innerHTML += `
+        <input type="checkbox" id="${bebida.replace('{"nome":"', '').split('valor')[1].replace('":"', '').replace('"}', '')}" name="bebida" value="${bebida.replace('{"nome":"', '').split('valor')[0].replace('","', '')}">
+          <label class="form-check-label" for="${bebida}">
+            ${bebida.replace('{"nome":"', '').split('valor')[0].replace('","', '')} <strong>R$${bebida.replace('{"nome":"', '').split('valor')[1].replace('":"', '').replace('"}', '')}</strong>
+          </label><br>
+        `;
+      });
+      conteudo.innerHTML += '</div>';
+    });
+
+  };
+
+  function calcTotal() {
+    alert('asd');
+  }
+</script>
+
+<script>
+    function enviaPedido(){
+
+      const tamanhoMarmita = document.querySelector('input[name="tamanhos"]:checked').value;
+      var valorMarmita = document.querySelector('input[name="tamanhos"]:checked').id;
+
+      const checkboxesIngredientes = document.querySelectorAll('input[name="comida"]');
+
+      const ingredientesMarcados = [];
+
+      checkboxesIngredientes.forEach(checkbox => {
+        if (checkbox.checked) {
+          ingredientesMarcados.push(checkbox.value);
+        }
+      });
+
+      const checkboxesBebidas = document.querySelectorAll('input[name="bebida"]');
+
+      const bebidasMarcados = [];
+      var valorBebidas = [];
+
+      checkboxesBebidas.forEach(checkbox => {
+        if (checkbox.checked) {
+          bebidasMarcados.push(checkbox.value);
+          valorBebidas.push(checkbox.id);
+        }
+      });
+
+      var total = 0;
+
+      total = valorMarmita;
+
+      for (let index = 0; index < valorBebidas.length; index++) {
+        total = Number.parseFloat(total) + Number.parseFloat(valorBebidas[index]);
+      }
+
+      const nome = document.getElementById('nomeCompleto').value;
+      const telefone = document.getElementById('telefone').value;
+      const endereco = document.getElementById('endereco').value;
+
+      const formaPagamento = document.querySelector('input[name="formaPagamento"]:checked').value;
+
+      var troco = "";
+      troco = document.getElementById('troco').value;
+
+      // Dados do pedido
+      const pedido = {
+        tamanho: tamanhoMarmita,
+        ingredientes: ingredientesMarcados,
+        bebidas: bebidasMarcados,
+        nome: nome,
+        telefone: telefone,
+        endereco: endereco,
+        credito: formaPagamento == 'Cartão de Crédito' ? true : false,
+        debito: formaPagamento == 'Cartão de Débito' ? true : false,
+        dinheiro: formaPagamento == 'Dinheiro' ? true : false,
+        pix: formaPagamento == 'PIX' ? true : false,
+        finalizado: false,
+        troco: troco,
+        total: total
+      };
+      const url = 'http://10.3.152.81:3333/pedidos/create/';
+
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(pedido)
+      };
+
+      fetch(url, options)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error('Erro ao enviar o pedido.');
+        })
+        .then(data => {
+          console.log('Pedido enviado com sucesso:', data);
+
+          alert('Pedido enviado com sucesso!');
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          alert('Ocorreu um erro ao enviar o pedido.');
+        });
+
+      }
+</script>
+
+<script>
+
+  var telefoneInput = document.getElementById('telefone');
+  telefoneInput.addEventListener('input', function() {
+    var x = this.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+    this.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+  });
+
+  var dinheiroRadio = document.getElementById('dinheiro');
+  var creditoRadio = document.getElementById('cartaoCredito');
+  var debitoRadio = document.getElementById('cartaoDebito');
+  var pixRadio = document.getElementById('pix');
+  var trocoGroup = document.getElementById('trocoGroup');
+  dinheiroRadio.addEventListener('click', function() {
+    trocoGroup.style.display = 'block';
+  });
+  creditoRadio.addEventListener('click', function() {
+    trocoGroup.style.display = 'none';
+  });
+  debitoRadio.addEventListener('click', function() {
+    trocoGroup.style.display = 'none';
+  });
+  pixRadio.addEventListener('click', function() {
+    trocoGroup.style.display = 'none';
+  });
+</script>
+
+</body>
+</html>
